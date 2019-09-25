@@ -77,20 +77,18 @@
                                         ; game2 - 49.102%
                                         ; game 1 easier by 16.997%
 
+(defun symbless (s1 s2)
+  (string-lessp (string s1) (string s2)))
+
+(defun set-equal (set1 set2)
+  (equal (sort set1 #'symbless) (sort set2 #'symbless)))
+
 (defun left-side (list)
-  (loop while (not (equal (first list) '-vs-))
-        collect (first list)
-        do (setf list (rest list))))
+  (loop for x in list until (eq x '-vs-)
+        collect x))
 
 (defun right-side (list)
-  (let ((current nil))
-    (loop while (not (equal current '-vs-))
-          do (setf current (first list))
-          do (setf list (rest list)))
-    (loop while (> (length list) 0)
-          collect (first list)
-          do (setf list (rest list))))
-    )
+  (rest (member '-vs- list)))
 
 (defun count-common (l1 l2)
   (let ((common 0))
