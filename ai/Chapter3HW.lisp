@@ -53,37 +53,29 @@
     (/ c (+ 1 (- e s)))))
 
 (defun game1 ()
-  (let ((x 0)
-        (n 6))
-    (loop while (> n 0)
-          do (decf n)
+  (let ((x 0))
+    (loop repeat 6
           if (= (random 6) 5)
           do (incf x))
     (>= x 1)))
 
 (defun game2 ()
-  (let ((win nil)
-        (n 24))
-    (loop while (> n 0)
-          do (decf n)
+  (let ((win nil))
+    (loop repeat 24
           if (= (random 6) (random 6) 5)
-          do (setf win t)
-          do (setf n 0))
+          do (setf win t))
     win))
 
 (defun winrate (g n)
-  (let ((wins 0)
-        (orig n))
-    (loop while (> n 0)
-
-          do (decf n)
+  (let ((wins 0))
+    (loop repeat n
           if (funcall g)
           do (incf wins))
-    (/ wins orig)))
+    (/ wins n)))
 
                                         ; game1 - 66.099%
-                                        ; game2 -  2.873%
-                                        ; game 1 easier by 63.226% or ~23 times easier
+                                        ; game2 - 49.102%
+                                        ; game 1 easier by 16.997%
 
 (defun left-side (list)
   (loop while (not (equal (first list) '-vs-))
@@ -109,4 +101,4 @@
     common))
 
 (defun compare (list)
-  (count-common (left-side list) (right-side list)))
+  (list (count-common (left-side list) (right-side list)) 'common 'features))
