@@ -45,7 +45,7 @@
            (writelog (writelog log roll) 'you-win))
           ((instant-loss-p roll)
            (writelog (writelog log roll) 'you-lose))
-          (t (rest-craps (writelog log roll) roll)))))
+          (t (rest-craps (writelog (writelog (writelog (writelog log 'your) 'point) 'is) roll) roll)))))
 
 (defun rest-craps (log first)
   (let ((roll (say-throw (throw-dice))))
@@ -54,3 +54,10 @@
           ((equal roll 7)
            (writelog (writelog log roll) 'you-lose))
           (t (rest-craps (writelog log roll) first)))))
+
+(defun winrate (g n)
+  (let ((wins 0))
+    (loop repeat n
+          if (eq (first (last (funcall g))) 'you-win)
+          do (incf wins))
+    (float (* 100 (/ wins n)))))
