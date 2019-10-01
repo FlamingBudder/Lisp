@@ -47,26 +47,60 @@ symbol `GOOD`, then put every element from the list y in the answer."
                (> (second pt) 200))
         collect pt))
 
-(defun ptffun (x y)
-  (+ (expt x 2)
-     (* 3 (expt y 2))
-     (* -2 x y)))
+(defun ptffun (list)
+  (+ (expt (first list) 2)
+     (* 3 (expt (second list) 2))
+     (* -2 (first list) (second list))))
 
 (defun ptf (pts)
   "* (`ptf`) Find the greatest value of 
 f(x,y)=x2+3y2−2xy
  using the
   points in the list."
-  (loop for pt in pts
-        (let ((x (first pt))
-              (y (second pt)))
-          )))
+  (let ((max (ptffun (first pts))))
+    (loop for pt in pts
+          do (setf max (max max (ptffun pt)))))
+  greatest)
+
+(defun smd (pts)
+  "* (`smd`) Find the smallest difference $\abs{x-y}$ in the list."
+  0)
 
 (defun aop (pts)
   "* (`aop`) If every point is on the parabola y=x2
  then return true (otherwise false)."
-  nil)
+  (let ((numb 0))
+    (loop for x in pts
+          until (not (= (expt (first x) 2) (second x)))
+          do (incf numb))
+    (= numb (length pts))))
 
+(defun isfar (pts)
+  "* (`isfar`) If any point has $\abs{y - x^2} > 10$, then return true."
+  (let ((has nil))
+    (loop for x in pts
+          until has
+          if (> (abs (- (second x) (expt (first x) 2))) 10)
+          do (setf has t))
+    has))
+
+(defun not10x (pts)
+  "* (`not10x`) If $y \not= 10^x$ for at least one (x,y) pair in the list, return true."
+  (let ((has nil))
+    (loop for x in pts
+          until has
+          do (setf has (= (expt 10 (first x)) (second x))))
+    (not has)))
+
+(defun xyzTrip (pts)
+  "* (`xyzTrip`) Given a list of triples (x,y,z)
+, which we write `(list x y z)`, 
+  return a list containing `(list x y)` for every point where z=x2+y2."
+  (loop for pt in pts
+        if (= (third pt) (+ (expt (first pt) 2)
+                            (expt (second pt) 2)))
+        collect (list (first pt)
+                      (second pt))))
 
 
 
@@ -111,76 +145,46 @@ f(x,y)=x2+3y2−2xy
 
 
 
-  (define-test test-y200
-      (assert-equal '((40 -300) (50 201) (5 -200) (50 500))
-		    (y200 '((40 -300) (50 201) (-205 90)
-			    (5 -200) (50 500) (400 95)))))
-
-  
-
-  (define-test test-ptf
-    "What is the greatest value of ptf?"
-    (assert-equal 225000 (ptf '((40 20) (50 200) (-90 40)))))
-
-  (defun smd (pts)
-    "* (`smd`) Find the smallest difference $\abs{x-y}$ in the list."
-    0)
-
-  (define-test test-smd
-    "What is the smallest difference? |x-y|"
-    (assert-equal 10 (ptf '((40 20) (50 200) (-90 -80) (800 30)))))
+(define-test test-y200
+    (assert-equal '((40 -300) (50 201) (5 -200) (50 500))
+		  (y200 '((40 -300) (50 201) (-205 90)
+			  (5 -200) (50 500) (400 95)))))
 
 
-  
 
-  (define-test test-aop
-    "Are points on parabola?"
-    (assert-true (aop '((5 25) (6 36) (9 81))))
-    (assert-false (aop '((5 25) (6 36) (7 50) (9 81)))))
+(define-test test-ptf
+  "What is the greatest value of ptf?"
+  (assert-equal 225000 (ptf '((40 20) (50 200) (-90 40)))))
 
-  (defun isfar (pts)
-    "* (`isfar`) If any point has $\abs{y - x^2} > 10$, then return true."
-    nil)
 
-  (define-test test-isfar
-    "isFar(), technically"
-    (assert-true (isfar '((5 25) (6 47) (9 81))))
-    (assert-true (isfar '((5 25) (6 25) (9 81))))
-    (assert-false (isfar '((5 24) (6 37) (9 79)))))
+(define-test test-smd
+  "What is the smallest difference? |x-y|"
+  (assert-equal 10 (ptf '((40 20) (50 200) (-90 -80) (800 30)))))
 
-  (defun not10x (pts)
-    "* (`not10x`) If $y \not= 10^x$ for at least one (x,y) pair in the list, return true."
-    nil)
 
-  (define-test test-not10x
-    "Not 10x"
-    (assert-false (not10x '((2 100) (3 1000))))
-    (assert-true (not10x '((2 10000) (4 100000)))))
 
-  (defun xyzTrip (pts)
-    "* (`xyzTrip`) Given a list of triples 
-(
-x
-,
-y
-,
-z
-)
-, which we write `(list x y z)`, 
-  return a list containing `(list x y)` for every point where 
-z
-=
-x
-2
-+
-y
-2
-."
-    (list (list 0 1)))
 
-  (define-test test-xyzTrip
-    "Triples?!"
-    (assert-equal '((5 12) (20 21))
-		  (xyzTrip '((5 12 169) (8 15 17) (20 21 841)))))
-  
-  (run-tests)
+(define-test test-aop
+  "Are points on parabola?"
+  (assert-true (aop '((5 25) (6 36) (9 81))))
+  (assert-false (aop '((5 25) (6 36) (7 50) (9 81)))))
+
+
+
+(define-test test-isfar
+  "isFar(), technically"
+  (assert-true (isfar '((5 25) (6 47) (9 81))))
+  (assert-true (isfar '((5 25) (6 25) (9 81))))
+  (assert-false (isfar '((5 24) (6 37) (9 79)))))
+
+(define-test test-not10x
+  "Not 10x"
+  (assert-false (not10x '((2 100) (3 1000))))
+  (assert-true (not10x '((2 10000) (4 100000)))))
+
+(define-test test-xyzTrip
+  "Triples?!"
+  (assert-equal '((5 12) (20 21))
+		(xyzTrip '((5 12 169) (8 15 17) (20 21 841)))))
+
+(run-tests)
