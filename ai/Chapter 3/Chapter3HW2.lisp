@@ -47,24 +47,31 @@ symbol `GOOD`, then put every element from the list y in the answer."
                (> (second pt) 200))
         collect pt))
 
-(defun ptffun (list)
-  (+ (expt (first list) 2)
-     (* 3 (expt (second list) 2))
-     (* -2 (first list) (second list))))
+;PTF Helper Functions
+
+(defun ptffun (x y)
+  (+ (expt x 2)
+     (* 3 (expt y 2))
+     (* -2 x y)))
+
+
 
 (defun ptf (pts)
   "* (`ptf`) Find the greatest value of 
 f(x,y)=x2+3y2−2xy
  using the
   points in the list."
-  (let ((max (ptffun (first pts))))
-    (loop for pt in pts
-          do (setf max (max max (ptffun pt)))))
-  greatest)
+  (let ((max (ptffun (first (first pts)) (second (first pts)))))
+    (loop for x in pts
+          do (setf max (max max (ptffun (first x) (second x)))))
+    max))
 
 (defun smd (pts)
   "* (`smd`) Find the smallest difference $\abs{x-y}$ in the list."
-  0)
+  (let ((min (abs (- (first (first pts)) (second (first pts))))))
+    (loop for x in pts
+          do (setf min (min min (abs (- (first x) (second x))))))
+    min))
 
 (defun aop (pts)
   "* (`aop`) If every point is on the parabola y=x2
@@ -101,6 +108,7 @@ f(x,y)=x2+3y2−2xy
                             (expt (second pt) 2)))
         collect (list (first pt)
                       (second pt))))
+
 
 
 
@@ -150,11 +158,10 @@ f(x,y)=x2+3y2−2xy
 		  (y200 '((40 -300) (50 201) (-205 90)
 			  (5 -200) (50 500) (400 95)))))
 
-
-
 (define-test test-ptf
   "What is the greatest value of ptf?"
   (assert-equal 225000 (ptf '((40 20) (50 200) (-90 40)))))
+
 
 
 (define-test test-smd
@@ -176,6 +183,8 @@ f(x,y)=x2+3y2−2xy
   (assert-true (isfar '((5 25) (6 47) (9 81))))
   (assert-true (isfar '((5 25) (6 25) (9 81))))
   (assert-false (isfar '((5 24) (6 37) (9 79)))))
+
+
 
 (define-test test-not10x
   "Not 10x"
