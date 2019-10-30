@@ -52,3 +52,17 @@
             :add-list '(shop-has-money)
             :del-list '(have-money))))
 
+(defparameter *contradiction*
+  (list
+   (make-op :action 'jump-off-a-cliff
+            :preconds '(on-cliff)
+            :add-list '(off-cliff dead)
+            :del-list '(on-cliff))
+   (make-op :action 'jump-on-cushion
+            :preconds '(on-cliff cushion-placed)
+            :add-list '(off-cliff landed-safely)
+            :del-list '(on-cliff))
+   (make-op :action 'place-cushion
+            :preconds '()
+            :add-list '(cushion-placed)
+            :del-list '())))
