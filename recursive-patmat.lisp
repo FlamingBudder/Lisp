@@ -1,0 +1,25 @@
+(defun variablep (x)
+  (let ((str (symbol-name x)))
+    (if (eq (elt str 0) #\?)
+        (elt str 1))))
+
+(defun combine-assoc (l1 l2)
+  (loop for x in l2
+        do (setf l1 (acons (car x) (cdr x)
+                           l1)))
+  l1)
+
+(defun pattern-match (pat mat &optional vars)
+  (cond ((and (listp pat) (listp mat))
+         (let ((first (pattern-match (first pat) (first mat) vars))
+               (rest (pattern-match (rest pat) (rest mat) vars)))
+           (if (and first rest)
+               (combine-assoc vars (combine-assoc first rest)))))
+        ((variablep pat)
+         (if (or (not (assoc vars (variablep pat)))
+                 (equal (assoc vars (variablep pat)) mat))
+             (cons pat mat)))
+        ((eq pat mat)
+         (cons T T))
+        (t nil)))
+
