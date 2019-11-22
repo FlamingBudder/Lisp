@@ -3,26 +3,23 @@
     (if (eq (elt str 0) #\?)
         (elt str 1))))
 
-(defun aspend (list1 list2)
-  (loop for x in list2
-        do (setf list1 (acons (car x)
-                              (cdr x)
-                              list1))))
+(defun combine (a b)
+  (loop for x in a
+        do (setf b (acons (car x) (cdr x) b)))
+  b)
 
 (defun pattern-match (pat mat &optional vars)
   (cond  ((and pat mat (listp pat) (listp mat))
-         (let ((first (pattern-match (first pat) (first mat) vars))
-               (rest nil))
-           (if first
-               (setf rest (pattern-match (rest pat) (rest mat) (list first))))
-           (if rest
-               )))
+          (setf vars (pattern-match (first pat) (first mat) vars))
+          (if vars
+              (setf vars (pattern-match (rest pat) (rest mat) vars)))
+          vars)
         ((variablep pat)
          (if (or (not (assoc pat vars))                ;variable is not defined yet
                  (equal (cdr (assoc pat vars)) mat))   ;value of mat matches the already defined variable
-             (cons pat mat)))
+             (acons pat mat vars)))
         ((eq pat mat)
-         (cons t t))
+         (acons t t vars))
         (t nil)))
 
 (defun seg-match (pat mat &optional vars)
