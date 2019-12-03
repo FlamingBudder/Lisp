@@ -73,13 +73,20 @@
         (t MATCH-FAIL)))
 
 (defun segment-pattern-p (pattern)
-  "Is this a segment matching pattern: ((?* var) . pat)"
-  (and (consp pattern)
-       (starts-with (first pattern) '?*)))
+  "Is this a segment matching pattern: ((?*/?+ var) . pat), if so return "
+  (if (and (consp pattern)
+           (or (starts-with (first pattern) '?*)
+               (starts-with (first pattern) '?+)))
+      (first (first pattern))))
+
+(defun determine-start (x)
+  "Determine where to start seg-match based on ?* or ?+"
+  (cond ((eq '?* x) 0)
+        ((eq '?+ x) 1)))
 
 ;;; ==============================
 
-(defun segment-match (pattern input bindings &optional (start 0))
+(defun segment-match (pattern input bindings &optional (start (determine-start (segment-pattern-p pattern))))
   "Match the segment pattern ((?* var) . pat) against input."
   (let ((var (second (first pattern)))
         (pat (rest pattern)))
