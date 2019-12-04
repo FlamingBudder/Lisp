@@ -106,3 +106,18 @@
                 (if (eq b2 MATCH-FAIL)
                     (segment-match pattern input bindings (+ pos 1))
                     b2)))))))
+
+(defun match-is (var-and-pred input bindings)
+  "Succeed and bind var if the input satisfies pred"
+  (let* ((var (first var-and-pred))
+         (pred (second var-and-pred))
+         (new-bindings (pat-match var input bindings)))
+    (if (or (eq new-bindings match-fail)
+            (not (funcall pred input)))
+        match-fail
+        new-bindings)))
+
+(defun match-and (patterns input bindings)
+  "Succeed if all the patterns match the input"
+  (loop for pat in patterns
+        thereis (pat-match pat input bindings)))
